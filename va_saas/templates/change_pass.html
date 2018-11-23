@@ -1,0 +1,7 @@
+{% autoescape off %}
+Hi {{ user.username }},
+You have requested a password change. If it wasn't you, you can probably ignore this e-mail. 
+Your new password is {{ password }}. 
+
+You can login at {{ login_url }}
+{% endautoescape %}
