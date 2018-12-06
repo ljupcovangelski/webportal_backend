@@ -15,4 +15,7 @@ urlpatterns = [
     url(r'^forgot_password', views.forgot_pass, name = 'forgot_password'),
     url(r'^add_customer', views.add_customer, name = 'add_customer'),
     url(r'^map_customer_to_user', views.map_customer_user, name = 'map_customer_user'),
+    url(r'^get_features', views.get_features, name = 'get_features'),
+    url(r'^get_invoices', views.get_invoices, name = 'get_invoices'),
+
 ]                                            

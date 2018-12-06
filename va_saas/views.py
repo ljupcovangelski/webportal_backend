@@ -22,11 +22,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
-from .models import CompanyPageLanding, CompanyPagePricing, CompanyPageAbout, CompanyPage
+from .models import CompanyPageLanding, CompanyPagePricing, CompanyPageAbout, CompanyPage, CompanyPageFeature, CompanyPageFeaturesList
 from .serializers import UserSerializer, UserSerializerWithToken
 import requests, json
 
-from silver.models import Customer
+from silver.models import Customer, Invoice
 from silver_extensions.models import UserCustomerMapping
 
 
@@ -107,6 +107,11 @@ def add_customer(request):
     return Response('Success!')
 
 
+def get_customer_for_user(request):
+    mapping = UserCustomerMapping.objects.filter(user = request.user).all()[0]
+    return mapping.customer
+
+
 @api_view(['POST'])
 def map_customer_user(request):
 
@@ -114,7 +119,6 @@ def map_customer_user(request):
 
     customer = Customer.objects.filter(id = data['customer_id']).all()[0]
     relation_type = data['relation_type']
-    print ('Customer : ', customer, 'relation : ', relation_type, ' user : ', request.user)
     relation_type = UserCustomerMapping(customer = customer, user = request.user, relation_type = relation_type)
     relation_type.save()
 
@@ -169,6 +173,46 @@ def filter_get_request_data(request, model, to_dict = True):
         data = model_to_dict(data[0])
 
     return data
+
+def get_features(request):
+    company_name = request.GET['company_name']
+
+    data = CompanyPageFeature.objects.filter(belongs_to_list__company_page__company_name = company_name)
+#    data = CompanyPageFeature.objects.filter(company_name = belongs_to_list.company_name)
+    data = {
+        "success" : True, 
+        "message" : "", 
+        "data" :  [{
+            "feature_image" : x.feature_image.url, 
+            "feature_details" : x.feature_details,
+            "feature_header" : x.feature_header,
+        } for x in data]
+    }
+    return HttpResponse(json.dumps(data))
+
+def get_invoices(request):
+    
+    user = current_user(request)
+
+    user_relationship = UserCustomerMapping.objects.filter(user_id = request.user.id).all()
+    customers = [x.customer for x in user_relationship]
+    invoices = []
+    for customer in customers: 
+
+        invoice = Invoice.objects.filter(customer = customer).all()
+        if invoice:
+            invoice = invoice[0]
+            invoice = {
+                x : str(getattr(invoice, x)) for x in ["kind", "related_document", "series", "number", "customer", "provider", "archived_customer", "archived_provider", "due_date", "issue_date", "paid_date", "cancel_date", "sales_tax_percent", "sales_tax_name", "currency", "transaction_currency", "transaction_xe_rate", "transaction_xe_date", "pdf", "state"]
+            }
+            invoices.append(invoice)
+
+    data = {"success" : True, "message" : "", "data" : invoices}
+    return HttpResponse(json.dumps(data))
+   
+def get_plans(request):
+    pass
+
 
 def get_company_page_landing(request):
     data = json.dumps(filter_get_request_data(request, CompanyPageLanding))

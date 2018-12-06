@@ -75,6 +75,8 @@ def get_subscriptions(request):
     customers = [x.customer for x in user_relationship]
 
     subscriptions = [{
+	'id': subscription.id,
+	'customer_id': customer.id,
         'description' : subscription.description, 
         'plan_name' : subscription.plan.name,
         'state' : subscription.state, 

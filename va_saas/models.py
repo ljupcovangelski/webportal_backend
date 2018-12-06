@@ -53,7 +53,7 @@ class CompanyPageFeaturesList(models.Model):
         return 'Features for ' + self.company_page.company_name
 
 class CompanyPageFeature(models.Model):
-    feature_image = models.URLField(max_length = 500)
+    feature_image = models.ImageField(max_length = 500)
     feature_header = models.CharField(max_length = 500)
     feature_details = models.CharField(max_length = 500)
     feature_header_short_len = 10

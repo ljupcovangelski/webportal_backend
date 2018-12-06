@@ -105,10 +105,16 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = 'va_purchase_project.urls'
 
+PROJECT_ROOT = os.path.dirname(__file__)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            PROJECT_ROOT + '/payment_processors/templates/',
+            PROJECT_ROOT + '/templates/',
+            PROJECT_ROOT + '/silver/templates/',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -201,6 +207,13 @@ PAYMENT_PROCESSORS = {
     }
 }
 
+SILVER_AUTOMATICALLY_CREATE_TRANSACTIONS = True
+SILVER_DOCUMENT_PREFIX = 'documents/'
+SILVER_DOCUMENT_STORAGE = None
+PDF_GENERATION_TIME_LIMIT = 60
+
+TRANSACTION_SAVE_TIME_LIMIT = 5
+
 # Email settings - for account confirmation
 
 EMAIL_PORT = 587
@@ -208,6 +221,11 @@ EMAIL_USE_TLS = True
 
 from creds import EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL, SERVER_EMAIL
 
+EMAIL_HOST = EMAIL_HOST or None
+EMAIL_HOST_USER = EMAIL_HOST_USER or None
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD or None
+DEFAULT_FROM_EMAIL = DEFAULT_FROM_EMAIL or None
+SERVER_EMAIL = SERVER_EMAIL or None
 
 # Media settings, for uploading images. 
 
